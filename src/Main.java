@@ -23,7 +23,11 @@ public class Main {
                 continue;
             }
 
-            switch (command.toLowerCase()) {
+            // Normaliza o comando removendo espaços e passando a minúsculas
+            // Suporta "addJourney" e "add Journey" indiferentemente
+            String cmd = command.replaceAll("\\s+", "").toLowerCase();
+
+            switch (cmd) {
                 case "help":
                     executeHelp();
                     break;
@@ -52,7 +56,7 @@ public class Main {
     }
 
     /**
-     * Gere o ciclo de vida inicial da aplicação segundo a Secção 3 do enunciado:
+     * Ciclo de vida inicial da aplicação segundo a Secção 3 do enunciado:
      * 1. Se o ficheiro de serialização existir, restaura o estado.
      * 2. Senão, se for fornecido ficheiro de linha legível, carrega a rede vazia.
      * 3. Se nenhum estiver disponível, termina a execução com a mensagem de erro.
@@ -67,11 +71,11 @@ public class Main {
                 System.out.println("Transportation network restored successfully.");
                 return directory;
             } catch (IOException | ClassNotFoundException e) {
-                // Se falhar a leitura do ficheiro de serialização, prossegue para os argumentos
+                // Se falhar o restauro, tenta prosseguir com os argumentos
             }
         }
 
-        // 2. Carregar a partir do ficheiro de definição da linha (se passado por argumento)
+        // 2. Carregar a partir do ficheiro de definição da linha
         if (args.length > 0) {
             File lineFile = new File(args[0]);
             if (lineFile.exists() && lineFile.canRead()) {
@@ -87,12 +91,12 @@ public class Main {
                         return directory;
                     }
                 } catch (Exception e) {
-                    // Erro na leitura do ficheiro de texto
+                    // Erro de leitura no ficheiro de texto
                 }
             }
         }
 
-        // 3. Nem serialização nem linha disponíveis
+        // 3. Nem serialização nem ficheiro de linha disponíveis
         System.out.println("No line definition.");
         System.exit(0);
         return null;
@@ -107,7 +111,7 @@ public class Main {
     }
 
     /**
-     * Na Fase 1 o comando minTransfers não existe e não pode aparecer no help.
+     * Na Fase 1 o comando minTransfers não existe e não é listado no help.
      */
     private static void executeHelp() {
         System.out.println("addJourney: Inserts a new journey into the transportation network.");
@@ -119,7 +123,7 @@ public class Main {
     }
 
     /**
-     * Lê todo o input associado à viagem antes de verificar se o ID já existe.
+     * Lê todo o input da viagem antes de verificar se o ID já existe.
      */
     private static void executeAddJourney(Scanner in, StationsDirectory directory) {
         String journeyId = in.nextLine().trim();
@@ -152,7 +156,7 @@ public class Main {
     }
 
     /**
-     * Validações em ordem:
+     * Validações em ordem estrita:
      * 1. Invalid station.
      * 2. Invalid time.
      * 3. Stations are not in the correct order.
@@ -164,22 +168,32 @@ public class Main {
 
         if (!directory.hasStation(origin) || !directory.hasStation(dest)) {
             System.out.println("Invalid station.");
-        } else if (!directory.isValidTime(time)) {
+            return;
+        }
+
+        Time passengerTime = Time.parse(time);
+        if (passengerTime == null) {
             System.out.println("Invalid time.");
-        } else if (!directory.isValidOrder(origin, dest)) {
+            return;
+        }
+
+        if (!directory.isValidOrder(origin, dest)) {
             System.out.println("Stations are not in the correct order.");
+            return;
+        }
+
+        Journey j = directory.findJourney(origin, dest, passengerTime);
+        if (j == null) {
+            System.out.println("No direct journey is available.");
         } else {
-            JourneyResult result = directory.findJourney(origin, dest, time);
-            if (result == null) {
-                System.out.println("No direct journey is available.");
-            } else {
-                printJourney(result);
-            }
+            Station origSt = directory.getStation(origin);
+            Station destSt = directory.getStation(dest);
+            printJourney(j, origSt, destSt);
         }
     }
 
     /**
-     * Validações em ordem:
+     * Validações em ordem estrita:
      * 1. Invalid station.
      * 2. Invalid time.
      * 3. Invalid interval time.
@@ -190,36 +204,56 @@ public class Main {
         String dest = in.nextLine().trim();
         String timeLine = in.nextLine().trim();
 
-        // Os dois tempos vêm na mesma linha, separados por espaço
-        String[] times = timeLine.split("\\s+");
-        String minTime = times.length > 0 ? times[0] : "";
-        String maxTime = times.length > 1 ? times[1] : "";
-
+        // 1. Validar estações
         if (!directory.hasStation(origin) || !directory.hasStation(dest)) {
             System.out.println("Invalid station.");
-        } else if (times.length != 2 || !directory.isValidTime(minTime) || !directory.isValidTime(maxTime)) {
+            return;
+        }
+
+        // 2. Validar horas (vêm na mesma linha separadas por espaço)
+        String[] times = timeLine.split("\\s+");
+        if (times.length != 2) {
             System.out.println("Invalid time.");
-        } else if (!directory.isValidInterval(minTime, maxTime)) {
+            return;
+        }
+
+        Time minTime = Time.parse(times[0]);
+        Time maxTime = Time.parse(times[1]);
+        if (minTime == null || maxTime == null) {
+            System.out.println("Invalid time.");
+            return;
+        }
+
+        // 3. Validar intervalo
+        if (minTime.isAfter(maxTime)) {
             System.out.println("Invalid interval time.");
-        } else if (!directory.isValidOrder(origin, dest)) {
+            return;
+        }
+
+        // 4. Validar ordem na linha
+        if (!directory.isValidOrder(origin, dest)) {
             System.out.println("Stations are not in the correct order.");
+            return;
+        }
+
+        // 5. Pesquisa
+        Journey j = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
+        if (j == null) {
+            System.out.println("No direct journey is available.");
         } else {
-            JourneyResult result = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
-            if (result == null) {
-                System.out.println("No direct journey is available.");
-            } else {
-                printJourney(result);
-                System.out.println("Stops: " + result.getStops());
-            }
+            Station origSt = directory.getStation(origin);
+            Station destSt = directory.getStation(dest);
+            printJourney(j, origSt, destSt);
+            System.out.println("Stops: " + j.countStopsBetween(origSt, destSt));
         }
     }
 
-    private static void printJourney(JourneyResult result) {
-        System.out.println("Journey: " + result.getJourneyId());
-        System.out.println("Departure station: " + result.getOriginName());
-        System.out.println("Departure time: " + result.getDepartureTime());
-        System.out.println("Arrival station: " + result.getDestinationName());
-        System.out.println("Arrival time: " + result.getArrivalTime());
+    private static void printJourney(Journey journey, Station origin, Station dest) {
+        System.out.println("Journey: " + journey.getId());
+        System.out.println("Departure station: " + origin.getName());
+        System.out.println("Departure time: " + journey.getStop(origin).getDepartureTime());
+        System.out.println("Arrival station: " + dest.getName());
+        System.out.println("Arrival time: " + journey.getStop(dest).getArrivalTime());
     }
 
     private static void executeRemoveJourney(Scanner in, StationsDirectory directory) {

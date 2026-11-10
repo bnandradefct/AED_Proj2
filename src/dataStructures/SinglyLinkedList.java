@@ -2,38 +2,43 @@ package dataStructures;
 
 /**
  * Implementation of Singly Linked List
- * @author AED  Team
+ * @author AED Team
  * @version 1.0
  * @param <E> Generic Element
- *
  */
 public class SinglyLinkedList<E> extends SequenceLinkedList<E> {
 
-    public SinglyLinkedList( ) {
+    public SinglyLinkedList() {
         super();
     }
 
-    /**
-     * Inserts the specified element at the first position in the list.
-     *
-     * @param element to be inserted
-     */
     @Override
     public void addFirst(E element) {
-       //TODO: Left as an exercise.
+        LinkedNode<E> newNode = new SinglyListNode<>(element, (SinglyListNode<E>) head);
+        if (isEmpty()) {
+            tail = newNode;
+        }
+        head = newNode;
+        currentSize++;
     }
 
-    /**
-     * Inserts the specified element at the last position in the list.
-     *
-     * @param element to be inserted
-     */
     @Override
     public void addLast(E element) {
-       //TODO: Left as an exercise.
+        LinkedNode<E> newNode = new SinglyListNode<>(element, null);
+        if (isEmpty()) {
+            head = newNode;
+        } else {
+            ((SinglyListNode<E>) tail).setNext(newNode);
+        }
+        tail = newNode;
+        currentSize++;
     }
 
+    @Override
     void addMiddle(int position, E element) {
-        //TODO: Left as an exercise.
+        LinkedNode<E> prevNode = getNode(position - 1);
+        LinkedNode<E> newNode = new SinglyListNode<>(element, (SinglyListNode<E>) prevNode.getNext());
+        ((SinglyListNode<E>) prevNode).setNext(newNode);
+        currentSize++;
     }
 }

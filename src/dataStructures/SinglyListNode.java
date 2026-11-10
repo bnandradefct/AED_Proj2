@@ -4,12 +4,14 @@ import java.io.Serializable;
 
 /**
  * Singly List Node Implementation
- * @author AED  Team
+ * @authors Bernardo Andrade 68024; Rodrigo Pinheiro 69067
  * @version 1.0
  * @param <E> Generic Element
  *
+ * Space complexity: O(1)
  */
-class SinglyListNode<E> implements LinkedNode<E> {
+class SinglyListNode<E> implements LinkedNode<E>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Element stored in the node.
@@ -25,6 +27,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
      *
      * @param theElement - The element to be contained in the node
      * @param theNext - the next node
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public SinglyListNode( E theElement, SinglyListNode<E> theNext ) {
         element = theElement;
@@ -34,6 +40,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
     /**
      *
      * @param theElement to be contained in the node
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public SinglyListNode( E theElement ) {
         this(theElement, null);
@@ -42,6 +52,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
     /**
      *
      * @return the element contained in the node
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public E getElement( ) {
         return element;
@@ -50,6 +64,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
     /**
      *
      * @return the next node
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public LinkedNode<E> getNext( ) {
         return next;
@@ -58,6 +76,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
     /**
      *
      * @param newElement - New element to replace the current element
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public void setElement( E newElement ) {
         element = newElement;
@@ -66,6 +88,10 @@ class SinglyListNode<E> implements LinkedNode<E> {
     /**
      *
      * @param newNext - node to replace the next node
+     * 
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     public void setNext( LinkedNode<E> newNext ) {
         next = newNext;

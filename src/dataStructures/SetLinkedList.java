@@ -2,96 +2,107 @@ package dataStructures;
 
 public class SetLinkedList<E> extends LinkedList<E> implements Set<E> {
 
-    public SetLinkedList(){
+    public SetLinkedList() {
         super();
     }
 
     @Override
     void addElem(E element) {
-        //TODO: Left as an exercise.
-        
+        put(element);
     }
 
-    /**
-     * If there is an element in the set equals to a specified element,
-     * returns the element; otherwise, returns null.
-     *
-     * @param element
-     * @return an element in the set equals to a specified element,
-     * or null otherwise
-     */
     @Override
     public E get(E element) {
-        //TODO: Left as an exercise.
-	return null;
-        
+        if (element == null) return null;
+        LinkedNode<E> curr = head;
+        while (curr != null) {
+            if (element.equals(curr.getElement())) {
+                return curr.getElement();
+            }
+            curr = curr.getNext();
+        }
+        return null;
     }
 
-    /**
-     * If there is an element in the set equals to a specified element,
-     * returns true; otherwise, returns false.
-     *
-     * @param element
-     * @return
-     */
     @Override
     public boolean contains(E element) {
         if (isEmpty())
             return false;
-        return get(element)!=null;
+        return get(element) != null;
     }
 
-    /**
-     * Inserts the element,
-     * if there is not an element in the set equals to the specified element and return true.
-     * otherwise returns false
-     * @param element to be added
-     * @return true if insert the element, otherwise false
-     */
-    public boolean put(E element){
-        //TODO: Left as an exercise.
-        
+    @Override
+    public boolean put(E element) {
+        if (contains(element)) {
+            return false;
+        }
+        // Cast explícito de (SinglyListNode<E>) head para permitir inferência de tipos
+        LinkedNode<E> newNode = new SinglyListNode<>(element, (SinglyListNode<E>) head);
+        if (isEmpty()) {
+            tail = newNode;
+        }
+        head = newNode;
+        currentSize++;
+        invariant();
         return true;
     }
 
-    /**
-     * If there is an element in the set equals to the specified element
-     * replace the element and return old element.
-     * otherwise returns null
-     *
-     * @param element to be added
-     * @return old element, otherwise null
-     */
     @Override
     public E replace(E element) {
-        //TODO: Left as an exercise.
-        
+        if (element == null) return null;
+        LinkedNode<E> curr = head;
+        while (curr != null) {
+            if (element.equals(curr.getElement())) {
+                E old = curr.getElement();
+                ((SinglyListNode<E>) curr).setElement(element);
+                return old;
+            }
+            curr = curr.getNext();
+        }
         return null;
     }
 
-    /**
-     * If there is an element in the set equals to the specified element,
-     * removes it from the set and returns the element;
-     * otherwise, returns null.
-     *
-     * @param element to be removed
-     * @return element removed,
-     * or null if the set does not an element equals
-     */
     @Override
     public E remove(E element) {
-        //TODO: Left as an exercise.
-        
+        if (isEmpty() || element == null) {
+            return null;
+        }
+
+        if (element.equals(head.getElement())) {
+            return super.removeFirstNode();
+        }
+
+        LinkedNode<E> prev = head;
+        LinkedNode<E> curr = head.getNext();
+
+        while (curr != null) {
+            if (element.equals(curr.getElement())) {
+                pairNode<E> pair = new pairNode<>(prev, curr);
+                if (curr == tail) {
+                    return super.removeLastNode(pair);
+                } else {
+                    super.removeMiddleNode(pair);
+                    return curr.getElement();
+                }
+            }
+            prev = curr;
+            curr = curr.getNext();
+        }
         return null;
     }
 
-    
-    private void invariant(){
+    private void invariant() {
         assert allDif();
     }
 
     private boolean allDif() {
-        
+        for (LinkedNode<E> n1 = head; n1 != null; n1 = n1.getNext()) {
+            for (LinkedNode<E> n2 = n1.getNext(); n2 != null; n2 = n2.getNext()) {
+                if (n1.getElement().equals(n2.getElement())) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 }

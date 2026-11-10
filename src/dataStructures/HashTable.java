@@ -2,15 +2,16 @@ package dataStructures;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 
 /**
  * Hash Table
- * @author AED  Team
+ * @author AED Team
  * @version 1.0
  * @param <K> Generic Key
  * @param <V> Generic Value
  */
- abstract class HashTable<K,V> implements Map<K,V>{
+abstract class HashTable<K,V> implements Map<K,V>{
 
      // Default size of the hash table.
      static final int DEFAULT_CAPACITY = 50;
@@ -33,9 +34,14 @@ import java.io.ObjectOutputStream;
      // specified number; or zero if all such primes are greater
      // than Integer.MAX VALUE.
      protected static int nextPrime( int number ){
-         //TODO: Left as exercise
-        
+         for (int prime : PRIMES) {
+             if (prime >= number) {
+                 return prime;
+             }
+         }
+         return 0;
      }
+
      protected static final int[]
              PRIMES={11, 17, 19, 31, 47, 73,
              113, 181, 277, 421, 643, 967,
@@ -51,65 +57,24 @@ import java.io.ObjectOutputStream;
      protected boolean isFull( ){
          return currentSize == maxSize;
      }
-     /**
-      * Returns true iff the map contains no entries.
-      *
-      * @return true if the map is empty
-      */
+
      public boolean isEmpty() {
          return currentSize==0;
      }
 
-     /**
-      * Returns the number of entries in the map.
-      *
-      * @return number of elements in the map
-      */
      public int size() {
          return currentSize;
      }
 
-     /**
-      * If there is an entry in the map whose key is the specified key,
-      * returns its value; otherwise, returns null.
-      *
-      * @param key whose associated value is to be returned
-      * @return value of entry in the map whose key is the specified key,
-      * or null if the map does not have an entry with that key
-      */
-     public abstract V get(K key) ;
+     public abstract V get(K key);
 
-     /**
-      * If there is an entry in the map whose key is the specified key,
-      * replaces its value by the specified value and returns the old value;
-      * otherwise, inserts the entry (key, value) and returns null.
-      *
-      * @param key   with which the specified value is to be associated
-      * @param value to be associated with the specified key
-      * @return previous value associated with the key,
-      * or null if the map does not have an entry with that key
-      */
      public abstract V put(K key, V value);
 
-     /**
-      * If there is an entry in the map whose key is the specified key,
-      * removes it from the map and returns its value;
-      * otherwise, returns null.
-      *
-      * @param key whose entry is to be removed from the map
-      * @return previous value associated with the key,
-      * or null if the map does not an entry with that key
-      */
      public abstract V remove(K key);
 
-     /**
-      * Returns an iterator of the entries in the map.
-      *
-      * @return iterator of the entries in the map
-      */
      public abstract Iterator<Entry<K, V>> iterator();
 
- // MANUAL SERIALIZATION
+    // MANUAL SERIALIZATION
     @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject(); // write the normal attributes
@@ -134,13 +99,10 @@ import java.io.ObjectOutputStream;
             put(element.key(),element.value());
         }
     }
-    void writeData(ObjectOutputStream out)
-            throws IOException{
+
+    void writeData(ObjectOutputStream out) throws IOException {
     }
 
-    void readData(ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
+    void readData(ObjectInputStream in) throws IOException, ClassNotFoundException {
     }
-
-     
- }
+}
