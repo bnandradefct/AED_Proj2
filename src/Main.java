@@ -1,5 +1,5 @@
-import dataStructures.DoublyLinkedList;
 import dataStructures.List;
+import dataStructures.SinglyLinkedList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,28 +23,20 @@ public class Main {
                 continue;
             }
 
-            // O enunciado exige case-insensitivity nos nomes dos comandos
-            String cmd = command.toLowerCase();
-
-            switch (cmd) {
+            switch (command.toLowerCase()) {
                 case "help":
                     executeHelp();
                     break;
                 case "addjourney":
-                case "add journey":
                     executeAddJourney(in, directory);
                     break;
                 case "findjourney":
-                case "find journey":
                     executeFindJourney(in, directory);
                     break;
                 case "findjourneyminstops":
-                case "find journeyminstops":
-                case "find journey minstops":
                     executeFindJourneyMinStops(in, directory);
                     break;
                 case "removejourney":
-                case "remove journey":
                     executeRemoveJourney(in, directory);
                     break;
                 case "quit":
@@ -88,11 +80,10 @@ public class Main {
                         int numStations = Integer.parseInt(fileScanner.nextLine().trim());
                         StationsDirectory directory = new StationsDirectoryClass();
                         for (int i = 0; i < numStations && fileScanner.hasNextLine(); i++) {
-                            String stationName = fileScanner.nextLine().trim();
-                            directory.initStation(stationName);
+                            directory.initStation(fileScanner.nextLine().trim());
                         }
                         System.out.println("Transportation network not found.");
-                        System.out.println("Loading line definition. " + numStations + " stations loaded.");
+                        System.out.println("Loading line definition. " + directory.getStationCount() + " stations loaded.");
                         return directory;
                     }
                 } catch (Exception e) {
@@ -134,7 +125,7 @@ public class Main {
         String journeyId = in.nextLine().trim();
         int n = Integer.parseInt(in.nextLine().trim());
 
-        List<StopData> stops = new DoublyLinkedList<StopData>();
+        List<StopData> stops = new SinglyLinkedList<StopData>();
 
         for (int i = 0; i < n; i++) {
             String stationName = in.nextLine().trim();
@@ -169,41 +160,22 @@ public class Main {
     private static void executeFindJourney(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine().trim();
         String dest = in.nextLine().trim();
-        String timeStr = in.nextLine().trim();
+        String time = in.nextLine().trim();
 
-        // 1. Validar estações
         if (!directory.hasStation(origin) || !directory.hasStation(dest)) {
             System.out.println("Invalid station.");
-            return;
-        }
-
-        // 2. Validar hora
-        Time passengerTime = Time.parse(timeStr);
-        if (passengerTime == null) {
+        } else if (!directory.isValidTime(time)) {
             System.out.println("Invalid time.");
-            return;
-        }
-
-        // 3. Validar ordem na linha
-        if (!directory.isValidOrder(origin, dest)) {
+        } else if (!directory.isValidOrder(origin, dest)) {
             System.out.println("Stations are not in the correct order.");
-            return;
+        } else {
+            JourneyResult result = directory.findJourney(origin, dest, time);
+            if (result == null) {
+                System.out.println("No direct journey is available.");
+            } else {
+                printJourney(result);
+            }
         }
-
-        // 4. Procurar viagem
-        Journey j = directory.findJourney(origin, dest, passengerTime);
-        if (j == null) {
-            System.out.println("No direct journey is available.");
-            return;
-        }
-
-        Station origSt = directory.getStation(origin);
-        Station destSt = directory.getStation(dest);
-        System.out.println("Journey: " + j.getId());
-        System.out.println("Departure station: " + origSt.getName());
-        System.out.println("Departure time: " + j.getStop(origSt).getDepartureTime());
-        System.out.println("Arrival station: " + destSt.getName());
-        System.out.println("Arrival time: " + j.getStop(destSt).getArrivalTime());
     }
 
     /**
@@ -218,53 +190,36 @@ public class Main {
         String dest = in.nextLine().trim();
         String timeLine = in.nextLine().trim();
 
-        // 1. Validar estações
+        // Os dois tempos vêm na mesma linha, separados por espaço
+        String[] times = timeLine.split("\\s+");
+        String minTime = times.length > 0 ? times[0] : "";
+        String maxTime = times.length > 1 ? times[1] : "";
+
         if (!directory.hasStation(origin) || !directory.hasStation(dest)) {
             System.out.println("Invalid station.");
-            return;
-        }
-
-        // 2. Validar tempos (são passados na mesma linha separados por espaço)
-        String[] times = timeLine.split("\\s+");
-        if (times.length != 2) {
+        } else if (times.length != 2 || !directory.isValidTime(minTime) || !directory.isValidTime(maxTime)) {
             System.out.println("Invalid time.");
-            return;
-        }
-
-        Time minTime = Time.parse(times[0]);
-        Time maxTime = Time.parse(times[1]);
-        if (minTime == null || maxTime == null) {
-            System.out.println("Invalid time.");
-            return;
-        }
-
-        // 3. Validar intervalo
-        if (minTime.isAfter(maxTime)) {
+        } else if (!directory.isValidInterval(minTime, maxTime)) {
             System.out.println("Invalid interval time.");
-            return;
-        }
-
-        // 4. Validar ordem na linha
-        if (!directory.isValidOrder(origin, dest)) {
+        } else if (!directory.isValidOrder(origin, dest)) {
             System.out.println("Stations are not in the correct order.");
-            return;
+        } else {
+            JourneyResult result = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
+            if (result == null) {
+                System.out.println("No direct journey is available.");
+            } else {
+                printJourney(result);
+                System.out.println("Stops: " + result.getStops());
+            }
         }
+    }
 
-        // 5. Procurar viagem com menor número de paragens
-        Journey j = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
-        if (j == null) {
-            System.out.println("No direct journey is available.");
-            return;
-        }
-
-        Station origSt = directory.getStation(origin);
-        Station destSt = directory.getStation(dest);
-        System.out.println("Journey: " + j.getId());
-        System.out.println("Departure station: " + origSt.getName());
-        System.out.println("Departure time: " + j.getStop(origSt).getDepartureTime());
-        System.out.println("Arrival station: " + destSt.getName());
-        System.out.println("Arrival time: " + j.getStop(destSt).getArrivalTime());
-        System.out.println("Stops: " + j.countStopsBetween(origSt, destSt));
+    private static void printJourney(JourneyResult result) {
+        System.out.println("Journey: " + result.getJourneyId());
+        System.out.println("Departure station: " + result.getOriginName());
+        System.out.println("Departure time: " + result.getDepartureTime());
+        System.out.println("Arrival station: " + result.getDestinationName());
+        System.out.println("Arrival time: " + result.getArrivalTime());
     }
 
     private static void executeRemoveJourney(Scanner in, StationsDirectory directory) {
