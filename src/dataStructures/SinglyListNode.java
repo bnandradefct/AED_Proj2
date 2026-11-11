@@ -11,11 +11,13 @@ import java.io.Serializable;
  * Space complexity: O(1)
  */
 class SinglyListNode<E> implements LinkedNode<E>, Serializable {
+    @Serial 
     private static final long serialVersionUID = 1L;
 
     /**
      * Element stored in the node.
      */
+    @SuppressWarnings("serial")
     private E element;
 
     /**

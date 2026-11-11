@@ -14,6 +14,7 @@ public interface Map<K,V> extends Serializable {
 
     record Entry<K,V>(K key,V value) implements Serializable {
         @Override
+        @SuppressWarnings("unchecked")
         public boolean equals(Object obj) {
             if (this==obj) return true;
             if (!(obj instanceof Entry))

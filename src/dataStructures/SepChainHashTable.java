@@ -3,6 +3,7 @@ package dataStructures;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 
 /**
  * SepChain Hash Table
@@ -12,6 +13,8 @@ import java.io.ObjectOutputStream;
  * @param <V> Generic Value
  */
 public class SepChainHashTable<K,V> extends HashTable<K,V> {
+    @Serial 
+    private static final long serialVersionUID = 1L;
 
     //Load factors
     static final float IDEAL_LOAD_FACTOR = 0.75f;
@@ -30,7 +33,7 @@ public class SepChainHashTable<K,V> extends HashTable<K,V> {
         table = createTable(capacity);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Set<Entry<K,V>>[] createTable(int capacity){
         Set<Entry<K,V>>[] aux;
         int arraySize = HashTable.nextPrime((int) (capacity / IDEAL_LOAD_FACTOR));
@@ -118,7 +121,7 @@ public class SepChainHashTable<K,V> extends HashTable<K,V> {
      */
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return new SepChainHTIterator<>(table);
+        return new SepChainHTIterator<K, V>(table);
     }
 
     void writeData(ObjectOutputStream oos) throws IOException {

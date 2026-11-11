@@ -1,6 +1,10 @@
 package dataStructures;
 
+import java.io.Serial;
+
 public class SetLinkedList<E> extends LinkedList<E> implements Set<E> {
+    @Serial 
+    private static final long serialVersionUID = 1L;
 
     public SetLinkedList() {
         super();

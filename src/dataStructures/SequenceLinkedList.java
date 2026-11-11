@@ -1,5 +1,7 @@
 package dataStructures;
 
+import java.io.Serial;
+
 import dataStructures.exceptions.*;
 
 /**
@@ -9,6 +11,8 @@ import dataStructures.exceptions.*;
  * @param <E> Generic Element
  */
 abstract class SequenceLinkedList<E> extends LinkedList<E> implements List<E> {
+    @Serial 
+    private static final long serialVersionUID = 1L;
 
     public SequenceLinkedList() {
         super();

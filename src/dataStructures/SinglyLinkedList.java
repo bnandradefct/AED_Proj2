@@ -1,5 +1,7 @@
 package dataStructures;
 
+import java.io.Serial;
+
 /**
  * Implementation of Singly Linked List
  * @author AED Team
@@ -7,6 +9,8 @@ package dataStructures;
  * @param <E> Generic Element
  */
 public class SinglyLinkedList<E> extends SequenceLinkedList<E> {
+    @Serial 
+    private static final long serialVersionUID = 1L;
 
     public SinglyLinkedList() {
         super();

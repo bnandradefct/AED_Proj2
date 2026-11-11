@@ -1,5 +1,7 @@
 package dataStructures;
 
+import java.io.Serial;
+
 import dataStructures.exceptions.NoSuchElementException;
 
 /**
@@ -9,7 +11,8 @@ import dataStructures.exceptions.NoSuchElementException;
  * @param <E> Generic Element
  */
 public class DoublyLinkedList<E> extends SequenceLinkedList<E> implements TwoWayList<E> {
-
+    @Serial 
+    private static final long serialVersionUID = 1L;
     /**
      * Constructor of an empty double linked list.
      * head and tail are initialized as null.

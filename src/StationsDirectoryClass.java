@@ -86,8 +86,16 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
         while (it.hasNext()) {
             StopData sd = it.next();
             Station st = getStation(sd.stationName);
-            Time arr = (sd.arrivalTime != null) ? Time.parse(sd.arrivalTime) : null;
-            Time dep = (sd.departureTime != null) ? Time.parse(sd.departureTime) : null;
+            Time arr = null;
+            if (sd.arrivalTime != null) {
+            arr = Time.parse(sd.arrivalTime);
+            }
+
+            Time dep = null;
+            if (sd.departureTime != null) {
+            dep = Time.parse(sd.departureTime);
+            }
+
 
             Stop stop = new StopClass(st, arr, dep, index++);
             journey.addStop(stop);
