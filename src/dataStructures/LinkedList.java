@@ -17,15 +17,15 @@ abstract class LinkedList<E> implements Serializable {
     /**
      *  Node at the head of the list.
      */
-    transient LinkedNode<E> head;
+    LinkedNode<E> head;
     /**
      * Node at the tail of the list.
      */
-    transient LinkedNode<E> tail;
+    LinkedNode<E> tail;
     /**
      * Number of elements in the list.
      */
-    transient int currentSize;
+    int currentSize;
     /**
      * Constructor of an empty singly linked list.
      * head and tail are initialized as null.
@@ -255,6 +255,7 @@ abstract class LinkedList<E> implements Serializable {
      */
     void writeData(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
+
     }
 
     /**
