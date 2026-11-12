@@ -17,15 +17,15 @@ abstract class LinkedList<E> implements Serializable {
     /**
      *  Node at the head of the list.
      */
-    LinkedNode<E> head;
+    transient LinkedNode<E> head;
     /**
      * Node at the tail of the list.
      */
-    LinkedNode<E> tail;
+    transient LinkedNode<E> tail;
     /**
      * Number of elements in the list.
      */
-    int currentSize;
+    transient int currentSize;
     /**
      * Constructor of an empty singly linked list.
      * head and tail are initialized as null.
@@ -235,6 +235,12 @@ abstract class LinkedList<E> implements Serializable {
     @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
+        oos.writeInt(currentSize);
+        LinkedNode<E> curr = head;
+        while (curr != null) {
+            oos.writeObject(curr.getElement());
+            curr = curr.getNext();
+        }
     }
 
     // MANUAL DESERIALIZATION
@@ -243,9 +249,17 @@ abstract class LinkedList<E> implements Serializable {
      * - Best case: O(1)
      * - Worst case: O(1)
      */
-    @Serial
+   @Serial
+    @SuppressWarnings("unchecked")
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
+        int size = ois.readInt();
+        head = null;
+        tail = null;
+        currentSize = 0;
+        for (int i = 0; i < size; i++) {
+            addElem((E) ois.readObject());
+        }
     }
 
     /**

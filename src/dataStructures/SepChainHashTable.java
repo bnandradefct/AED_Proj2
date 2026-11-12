@@ -33,12 +33,12 @@ public class SepChainHashTable<K,V> extends HashTable<K,V> {
         table = createTable(capacity);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private Set<Entry<K,V>>[] createTable(int capacity){
         Set<Entry<K,V>>[] aux;
         int arraySize = HashTable.nextPrime((int) (capacity / IDEAL_LOAD_FACTOR));
         maxSize = (int)(arraySize * MAX_LOAD_FACTOR);
-        aux = (Set<Entry<K,V>>[]) new Set[arraySize];
+        aux = (Set<Entry<K,V>>[]) new Set<?> [arraySize];
         for ( int i = 0; i < arraySize; i++ )
             aux[i] = new SetLinkedList<>();
         return aux;
@@ -61,7 +61,7 @@ public class SepChainHashTable<K,V> extends HashTable<K,V> {
 
     // Returns the hash value of the specified key.
     int hash( K key ){
-        return Math.abs( key.hashCode() ) % table.length;
+        return (key.hashCode() & 0x7FFFFFFF) % table.length;
     }
 
     /**

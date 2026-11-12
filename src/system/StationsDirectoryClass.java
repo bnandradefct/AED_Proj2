@@ -88,18 +88,7 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
         while (it.hasNext()) {
             StopData sd = it.next();
             Station st = getStation(sd.stationName);
-            Time arr = null;
-            if (sd.arrivalTime != null) {
-            arr = Time.parse(sd.arrivalTime);
-            }
-
-            Time dep = null;
-            if (sd.departureTime != null) {
-            dep = Time.parse(sd.departureTime);
-            }
-
-
-            Stop stop = new StopClass(st, arr, dep, index++);
+            Stop stop = new StopClass(st, Time.parse(sd.arrivalTime), Time.parse(sd.departureTime), index++);
             journey.addStop(stop);
             st.addDeparture(journey);
         }
@@ -150,28 +139,20 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
         Iterator<Journey> it = origin.getDepartures().iterator();
         while (it.hasNext()) {
             Journey j = it.next();
-            if (j.stopsAt(dest)) {
-                Stop origStop = j.getStop(origin);
-                Stop destStop = j.getStop(dest);
+            Stop origStop = j.getStop(origin);
+            Stop destStop = j.getStop(dest);
 
-                if (origStop.getStopIndex() < destStop.getStopIndex()) {
-                    Time dep = origStop.getDepartureTime();
-                    if (dep != null && !dep.isBefore(passengerTime)) {
-                        if (bestJourney == null) {
-                            bestJourney = j;
-                            bestDepTime = dep;
-                        } else if (dep.isBefore(bestDepTime)) {
-                            bestJourney = j;
-                            bestDepTime = dep;
-                        } else if (dep.compareTo(bestDepTime) == 0 &&
-                                   j.getInsertionOrder() < bestJourney.getInsertionOrder()) {
-                            bestJourney = j;
-                            bestDepTime = dep;
-                        }
+            if (origStop != null && destStop != null && origStop.getStopIndex() < destStop.getStopIndex()) {
+                Time dep = origStop.getDepartureTime();
+                if (dep != null && !dep.isBefore(passengerTime)) {
+                    if (bestJourney == null || dep.isBefore(bestDepTime) ||
+                       (dep.compareTo(bestDepTime) == 0 && j.getInsertionOrder() < bestJourney.getInsertionOrder())) {
+                        bestJourney = j;
+                        bestDepTime = dep;
                     }
                 }
             }
-        }
+        } 
         return bestJourney;
     }
 

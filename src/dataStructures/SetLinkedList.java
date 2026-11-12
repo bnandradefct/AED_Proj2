@@ -40,14 +40,12 @@ public class SetLinkedList<E> extends LinkedList<E> implements Set<E> {
         if (contains(element)) {
             return false;
         }
-        // Cast explícito de (SinglyListNode<E>) head para permitir inferência de tipos
-        LinkedNode<E> newNode = new SinglyListNode<>(element, (SinglyListNode<E>) head);
+        SinglyListNode<E> newNode = new SinglyListNode<>(element, (SinglyListNode<E>) head);
         if (isEmpty()) {
             tail = newNode;
         }
         head = newNode;
         currentSize++;
-        invariant();
         return true;
     }
 
@@ -93,20 +91,5 @@ public class SetLinkedList<E> extends LinkedList<E> implements Set<E> {
             curr = curr.getNext();
         }
         return null;
-    }
-
-    private void invariant() {
-        assert allDif();
-    }
-
-    private boolean allDif() {
-        for (LinkedNode<E> n1 = head; n1 != null; n1 = n1.getNext()) {
-            for (LinkedNode<E> n2 = n1.getNext(); n2 != null; n2 = n2.getNext()) {
-                if (n1.getElement().equals(n2.getElement())) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

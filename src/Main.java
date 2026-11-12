@@ -126,7 +126,9 @@ public class Main {
      * Lê todo o input da viagem antes de verificar se o ID já existe.
      */
     private static void executeAddJourney(Scanner in, StationsDirectory directory) {
+        if (!in.hasNextLine()) return;
         String journeyId = in.nextLine().trim();
+        if (!in.hasNextLine()) return;
         int n = Integer.parseInt(in.nextLine().trim());
 
         List<StopData> stops = new SinglyLinkedList<StopData>();
