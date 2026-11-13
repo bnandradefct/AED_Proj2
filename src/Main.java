@@ -25,29 +25,31 @@ public class Main {
 
             // Normaliza o comando removendo espaços e passando a minúsculas
             // Suporta "addJourney" e "add Journey" indiferentemente
-            String cmd = command.replaceAll("\\s+", "").toLowerCase();
+            String normalCmd = command.toLowerCase();
+            CommandType cmd = CommandType.fromString(normalCmd);
 
             switch (cmd) {
-                case "help":
+                case HELP:
                     executeHelp();
                     break;
-                case "addjourney":
+                case ADD_JOURNEY:
                     executeAddJourney(in, directory);
                     break;
-                case "findjourney":
+                case FIND_JOURNEY:
                     executeFindJourney(in, directory);
                     break;
-                case "findjourneyminstops":
+                case FIND_JOURNEY_MIN_STOPS:
                     executeFindJourneyMinStops(in, directory);
                     break;
-                case "removejourney":
+                case REMOVE_JOURNEY:
                     executeRemoveJourney(in, directory);
                     break;
-                case "quit":
+                case QUIT:
                     saveDirectory(directory);
                     executeQuit();
                     running = false;
                     break;
+                case UNKNOWN:
                 default:
                     break;
             }
