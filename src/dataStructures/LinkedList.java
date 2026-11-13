@@ -182,17 +182,18 @@ abstract class LinkedList<E> implements Serializable {
      * @return pair with the previous node and the element node, Or null if no element
      * 
      * Time complexity:
-     * - Best case: O(1) — when the list is empty or the element is at the head.
+     * - Best case: O(1) — when the element is at the head.
      * - Worst case: O(n) — when the element is at the tail or does not exist in the list.
      */
-    pairNode<E>  nodeOf(E element){
+    pairNode<E> nodeOf(E element){
   
         LinkedNode<E> prev = null;
         LinkedNode<E> curr = head;
 
         while (curr != null) {
-            if ((element == null && curr.getElement() == null) ||
-                    (element != null && element.equals(curr.getElement()))) {
+            if (
+            //(element == null && curr.getElement() == null) ||
+            (element != null && element.equals(curr.getElement()))) {
                 return new pairNode<>(prev, curr);
             }
             prev = curr;
