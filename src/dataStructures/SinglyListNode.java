@@ -3,8 +3,9 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * Singly List Node Implementation
- * @authors Bernardo Andrade 68024; Rodrigo Pinheiro 69067
+ * Singly List Node Implementation.
+ *
+ * @author Bernardo Andrade 68024; Rodrigo Pinheiro 69067
  * @version 1.0
  * @param <E> Generic Element
  *
@@ -21,14 +22,15 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     private E element;
 
     /**
-     * (Pointer to) the next node.
+     * Pointer to the next node.
      */
     private LinkedNode<E> next;
 
     /**
+     * Constructs a SinglyListNode with the specified element and next node.
      *
-     * @param theElement - The element to be contained in the node
-     * @param theNext - the next node
+     * @param theElement the element to be contained in the node
+     * @param theNext the next node
      * 
      * Time complexity:
      * - Best case: O(1)
@@ -40,6 +42,7 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     }
 
     /**
+     * Constructs a SinglyListNode with the specified element and null next reference.
      *
      * @param theElement to be contained in the node
      * 
@@ -52,8 +55,9 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     }
 
     /**
+     * Returns the element contained in the node.
      *
-     * @return the element contained in the node
+     * @return the element
      * 
      * Time complexity:
      * - Best case: O(1)
@@ -64,6 +68,7 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     }
 
     /**
+     * Returns the next node.
      *
      * @return the next node
      * 
@@ -76,8 +81,9 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     }
 
     /**
+     * Updates the element stored in the node.
      *
-     * @param newElement - New element to replace the current element
+     * @param newElement new element to replace the current element
      * 
      * Time complexity:
      * - Best case: O(1)
@@ -88,8 +94,9 @@ class SinglyListNode<E> implements LinkedNode<E>, Serializable {
     }
 
     /**
+     * Updates the next node reference.
      *
-     * @param newNext - node to replace the next node
+     * @param newNext node to replace the next node
      * 
      * Time complexity:
      * - Best case: O(1)

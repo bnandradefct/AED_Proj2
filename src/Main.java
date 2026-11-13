@@ -8,9 +8,29 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 import system.*;
+
+/**
+ * Main entry point and command-line interface for the Journey Planner application.
+ *
+ * @author Bernardo Andrade 68024; Rodrigo Pinheiro 69067
+ * @version 1.0
+ *
+ * Space complexity: O(s + j * k), where s is the number of stations on the line,
+ * j is the number of registered journeys, and k is the average number of stops per journey.
+ */
 public class Main {
     private static final String DATA_FILE = "directory.dat";
 
+    /**
+     * Starts the application, loads or initializes the transportation network,
+     * and processes user commands from standard input until quit.
+     *
+     * @param args command-line arguments where args[0] optionally specifies the line definition file
+     *
+     * Time complexity:
+     * - Best case: O(1) when no line definition or serialization file exists
+     * - Worst case: O(c * (n + m)), where c is the number of commands, n is stops per journey, and m is departures per station
+     */
     public static void main(String[] args) {
         StationsDirectory directory = loadDirectory(args);
 
@@ -23,8 +43,6 @@ public class Main {
                 continue;
             }
 
-            // Normaliza o comando removendo espaços e passando a minúsculas
-            // Suporta "addJourney" e "add Journey" indiferentemente
             String normalCmd = command.toLowerCase();
             CommandType cmd = CommandType.fromString(normalCmd);
 
@@ -58,26 +76,29 @@ public class Main {
     }
 
     /**
-     * Ciclo de vida inicial da aplicação segundo a Secção 3 do enunciado:
-     * 1. Se o ficheiro de serialização existir, restaura o estado.
-     * 2. Senão, se for fornecido ficheiro de linha legível, carrega a rede vazia.
-     * 3. Se nenhum estiver disponível, termina a execução com a mensagem de erro.
+     * Restores the transportation network from the serialization file if available,
+     * otherwise initializes it from the line definition file provided in args,
+     * or terminates the application if neither exists.
+     *
+     * @param args command-line arguments
+     * @return the initialized or restored StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(1) when neither file exists
+     * - Worst case: O(s + j * k) when deserializing a saved network, where s is stations, j is journeys, and k is average stops per journey
      */
     private static StationsDirectory loadDirectory(String[] args) {
         File file = new File(DATA_FILE);
 
-        // 1. Restaurar de serialização se o ficheiro existir
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 StationsDirectory directory = (StationsDirectory) ois.readObject();
                 System.out.println("Transportation network restored successfully.");
                 return directory;
             } catch (IOException | ClassNotFoundException e) {
-                // Se falhar o restauro, tenta prosseguir com os argumentos
             }
         }
 
-        // 2. Carregar a partir do ficheiro de definição da linha
         if (args.length > 0) {
             File lineFile = new File(args[0]);
             if (lineFile.exists() && lineFile.canRead()) {
@@ -93,17 +114,24 @@ public class Main {
                         return directory;
                     }
                 } catch (Exception e) {
-                    // Erro de leitura no ficheiro de texto
                 }
             }
         }
 
-        // 3. Nem serialização nem ficheiro de linha disponíveis
         System.out.println("No line definition.");
         System.exit(0);
         return null;
     }
 
+    /**
+     * Serializes the current state of the transportation network to disk.
+     *
+     * @param directory the StationsDirectory to persist
+     *
+     * Time complexity:
+     * - Best case: O(n) when no journeys are stored, where n is the number of stations
+     * - Worst case: O(s + j * k), where s is stations, j is journeys, and k is average stops per journey
+     */
     private static void saveDirectory(StationsDirectory directory) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             out.writeObject(directory);
@@ -113,7 +141,11 @@ public class Main {
     }
 
     /**
-     * Na Fase 1 o comando minTransfers não existe e não é listado no help.
+     * Displays the list of available commands and their descriptions.
+     *
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
      */
     private static void executeHelp() {
         System.out.println("addJourney: Inserts a new journey into the transportation network.");
@@ -125,7 +157,14 @@ public class Main {
     }
 
     /**
-     * Lê todo o input da viagem antes de verificar se o ID já existe.
+     * Reads journey details from standard input and inserts the journey into the directory.
+     *
+     * @param in the input Scanner
+     * @param directory the StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(n) when the journey ID already exists, where n is the number of stops read
+     * - Worst case: O(n + m) when rehashing occurs, where n is stops and m is total registered journeys
      */
     private static void executeAddJourney(Scanner in, StationsDirectory directory) {
         if (!in.hasNextLine()) return;
@@ -133,7 +172,7 @@ public class Main {
         if (!in.hasNextLine()) return;
         int n = Integer.parseInt(in.nextLine().trim());
 
-        List<StopData> stops = new SinglyLinkedList<StopData>();
+        List<String> stops = new SinglyLinkedList<String>();
 
         for (int i = 0; i < n; i++) {
             String stationName = in.nextLine().trim();
@@ -148,8 +187,9 @@ public class Main {
                 arr = in.nextLine().trim();
                 dep = in.nextLine().trim();
             }
-
-            stops.addLast(new StopData(stationName, arr, dep));
+            stops.addLast(stationName);
+            stops.addLast(arr);
+            stops.addLast(dep);
         }
 
         if (directory.addJourney(journeyId, stops)) {
@@ -160,10 +200,15 @@ public class Main {
     }
 
     /**
-     * Validações em ordem estrita:
-     * 1. Invalid station.
-     * 2. Invalid time.
-     * 3. Stations are not in the correct order.
+     * Reads origin, destination, and passenger arrival time, validates them,
+     * and prints the earliest direct journey if available.
+     *
+     * @param in the input Scanner
+     * @param directory the StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(1) when input validation fails
+     * - Worst case: O(n), where n is the number of journeys serving the origin station
      */
     private static void executeFindJourney(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine().trim();
@@ -186,35 +231,35 @@ public class Main {
             return;
         }
 
-        Journey j = directory.findJourney(origin, dest, passengerTime);
+        String j = directory.findJourney(origin, dest, passengerTime);
         if (j == null) {
             System.out.println("No direct journey is available.");
         } else {
-            Station origSt = directory.getStation(origin);
-            Station destSt = directory.getStation(dest);
-            printJourney(j, origSt, destSt);
+            printJourney(j, origin, dest, directory);
         }
     }
 
     /**
-     * Validações em ordem estrita:
-     * 1. Invalid station.
-     * 2. Invalid time.
-     * 3. Invalid interval time.
-     * 4. Stations are not in the correct order.
+     * Reads origin, destination, and a departure time interval, validates them,
+     * and prints the direct journey with the fewest stops if available.
+     *
+     * @param in the input Scanner
+     * @param directory the StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(1) when input validation fails
+     * - Worst case: O(n), where n is the number of journeys serving the origin station
      */
     private static void executeFindJourneyMinStops(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine().trim();
         String dest = in.nextLine().trim();
         String timeLine = in.nextLine().trim();
 
-        // 1. Validar estações
         if (!directory.hasStation(origin) || !directory.hasStation(dest)) {
             System.out.println("Invalid station.");
             return;
         }
 
-        // 2. Validar horas (vêm na mesma linha separadas por espaço)
         String[] times = timeLine.split("\\s+");
         if (times.length != 2) {
             System.out.println("Invalid time.");
@@ -228,38 +273,55 @@ public class Main {
             return;
         }
 
-        // 3. Validar intervalo
         if (minTime.isAfter(maxTime)) {
             System.out.println("Invalid interval time.");
             return;
         }
 
-        // 4. Validar ordem na linha
         if (!directory.isValidOrder(origin, dest)) {
             System.out.println("Stations are not in the correct order.");
             return;
         }
 
-        // 5. Pesquisa
-        Journey j = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
+        String j = directory.findJourneyMinStops(origin, dest, minTime, maxTime);
         if (j == null) {
             System.out.println("No direct journey is available.");
         } else {
-            Station origSt = directory.getStation(origin);
-            Station destSt = directory.getStation(dest);
-            printJourney(j, origSt, destSt);
-            System.out.println("Stops: " + j.countStopsBetween(origSt, destSt));
+            printJourney(j, origin, dest, directory);
+            System.out.println("Stops: " + directory.countStopsBetween(j, origin, dest));
         }
     }
 
-    private static void printJourney(Journey journey, Station origin, Station dest) {
-        System.out.println("Journey: " + journey.getId());
-        System.out.println("Departure station: " + origin.getName());
-        System.out.println("Departure time: " + journey.getStop(origin).getDepartureTime());
-        System.out.println("Arrival station: " + dest.getName());
-        System.out.println("Arrival time: " + journey.getStop(dest).getArrivalTime());
+    /**
+     * Prints the formatted details of a selected journey between two stations.
+     *
+     * @param id the journey identifier
+     * @param origin the departure station name
+     * @param dest the arrival station name
+     * @param dir the StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(s + j + k) in case of hash collisions, where s is the number of stations, j is the number of journeys, and k is the number of stops in the journey
+     */
+    private static void printJourney(String id, String origin, String dest, StationsDirectory dir) {
+        System.out.println("Journey: " + id);
+        System.out.println("Departure station: " + dir.getStationName(origin));
+        System.out.println("Departure time: " + dir.getTime(id, origin, true));
+        System.out.println("Arrival station: " + dir.getStationName(dest));
+        System.out.println("Arrival time: " + dir.getTime(id, dest, false));
     }
 
+    /**
+     * Reads a journey identifier from standard input and removes it from the network.
+     *
+     * @param in the input Scanner
+     * @param directory the StationsDirectory
+     *
+     * Time complexity:
+     * - Best case: O(1) when the journey does not exist
+     * - Worst case: O(n * m + k), where n is the number of stops in the journey, m is the average departures per station, and k is the total number of registered journeys
+     */
     private static void executeRemoveJourney(Scanner in, StationsDirectory directory) {
         String journeyId = in.nextLine().trim();
         if (directory.removeJourney(journeyId)) {
@@ -269,6 +331,13 @@ public class Main {
         }
     }
 
+    /**
+     * Prints the termination messages upon exiting the application.
+     *
+     * Time complexity:
+     * - Best case: O(1)
+     * - Worst case: O(1)
+     */
     private static void executeQuit() {
         System.out.println("Transportation network saved.");
         System.out.println("Goodbye.");

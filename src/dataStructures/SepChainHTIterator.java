@@ -19,28 +19,28 @@ class SepChainHTIterator<K, V> implements Iterator<Map.Entry<K, V>> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Tabela de dispersão (array de baldes/conjuntos).
+     * Hash table bucket array.
      */
     private final Set<Map.Entry<K, V>>[] table;
 
     /**
-     * Índice do balde atual a ser percorrido.
+     * Index of the current bucket being traversed.
      */
     private int currentBucket;
 
     /**
-     * Iterador do balde atual. É null se a tabela estiver vazia ou terminada.
+     * Iterator for the current bucket, or null if the table is empty or exhausted.
      */
     private Iterator<Map.Entry<K, V>> bucketIterator;
 
     /**
-     * Construtor do iterador.
-     * 
+     * Constructs a SepChainHTIterator for the specified bucket array.
+     *
+     * @param table array of sets containing the hash table entries
+     *
      * Time complexity:
-     * - Best case: O(1) (o primeiro balde tem elementos)
-     * - Worst case: O(m) onde m é a capacidade da tabela
-     * 
-     * @param table Array de conjuntos com as entradas da hash table
+     * - Best case: O(1) when the first bucket contains elements
+     * - Worst case: O(n) when the table is empty or only the last bucket has elements, where n is the table capacity
      */
     public SepChainHTIterator(Set<Map.Entry<K, V>>[] table) {
         this.table = table;
@@ -48,11 +48,11 @@ class SepChainHTIterator<K, V> implements Iterator<Map.Entry<K, V>> {
     }
 
     /**
-     * Procura o próximo balde não nulo e com elementos a partir de currentBucket.
-     * 
+     * Advances currentBucket to the next non-null, non-empty bucket and initializes its iterator.
+     *
      * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(m) onde m é o comprimento da tabela
+     * - Best case: O(1) when the current bucket is non-empty
+     * - Worst case: O(n) when scanning across empty buckets, where n is the table capacity
      */
     private void findNextBucket() {
         while (currentBucket < table.length) {
@@ -66,9 +66,14 @@ class SepChainHTIterator<K, V> implements Iterator<Map.Entry<K, V>> {
     }
 
     /**
-     * Verifica se ainda existem elementos por visitar na tabela.
-     * 
-     * Time complexity: O(1)
+     * Returns true if next would return an element
+     * rather than throwing an exception.
+     *
+     * @return true iff the iteration has more elements
+     *
+     * Time complexity:
+     * - Best case: O(1) when the current bucket has remaining elements or the iteration has ended
+     * - Worst case: O(n) when advancing across empty buckets, where n is the table capacity
      */
     @Override
     public boolean hasNext() {
@@ -84,14 +89,14 @@ class SepChainHTIterator<K, V> implements Iterator<Map.Entry<K, V>> {
     }
 
     /**
-     * Devolve a próxima entrada (chave-valor) e avança o iterador.
-     * 
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration
+     * @throws NoSuchElementException if call is made without verifying pre-condition
+     *
      * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(m) se tiver de saltar baldes vazios até ao próximo elemento
-     * 
-     * @return Próxima Entry<K, V>
-     * @throws NoSuchElementException se não existirem mais elementos
+     * - Best case: O(1) when the current bucket has remaining elements
+     * - Worst case: O(n) when skipping empty buckets to reach the next entry, where n is the table capacity
      */
     @Override
     public Map.Entry<K, V> next() throws NoSuchElementException {
@@ -103,11 +108,12 @@ class SepChainHTIterator<K, V> implements Iterator<Map.Entry<K, V>> {
     }
 
     /**
-     * Reinicia o iterador para a primeira posição com elementos.
-     * 
+     * Restarts the iteration.
+     * After rewind, if the iteration is not empty, next will return the first element.
+     *
      * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(m)
+     * - Best case: O(1) when the first bucket is non-empty
+     * - Worst case: O(n) when the table is empty or only the last bucket has elements, where n is the table capacity
      */
     @Override
     public void rewind() {
