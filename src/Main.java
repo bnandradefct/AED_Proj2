@@ -344,7 +344,7 @@ public class Main {
         }
     }
 
-    private static void execureMinTransfers(Scanner in, StationsDirectory directory) {
+    private static void executeMinTransfers(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine();
         String destination = in.nextLine();
 
