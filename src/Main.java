@@ -1,3 +1,4 @@
+
 import dataStructures.List;
 import dataStructures.SinglyLinkedList;
 import java.io.File;
@@ -10,26 +11,31 @@ import java.util.Scanner;
 import system.*;
 
 /**
- * Main entry point and command-line interface for the Journey Planner application.
+ * Main entry point and command-line interface for the Journey Planner
+ * application.
  *
  * @author Bernardo Andrade 68024; Rodrigo Pinheiro 69067
  * @version 1.0
  *
- * Space complexity: O(s + j * k), where s is the number of stations on the line,
- * j is the number of registered journeys, and k is the average number of stops per journey.
+ * Space complexity: O(s + j * k), where s is the number of stations on the
+ * line, j is the number of registered journeys, and k is the average number of
+ * stops per journey.
  */
 public class Main {
+
     private static final String DATA_FILE = "directory.dat";
 
     /**
      * Starts the application, loads or initializes the transportation network,
      * and processes user commands from standard input until quit.
      *
-     * @param args command-line arguments where args[0] optionally specifies the line definition file
+     * @param args command-line arguments where args[0] optionally specifies the
+     * line definition file
      *
-     * Time complexity:
-     * - Best case: O(1) when no line definition or serialization file exists
-     * - Worst case: O(c * (n + m)), where c is the number of commands, n is stops per journey, and m is departures per station
+     * Time complexity: - Best case: O(1) when no line definition or
+     * serialization file exists - Worst case: O(c * (n + m)), where c is the
+     * number of commands, n is stops per journey, and m is departures per
+     * station
      */
     public static void main(String[] args) {
         StationsDirectory directory = loadDirectory(args);
@@ -62,6 +68,9 @@ public class Main {
                 case REMOVE_JOURNEY:
                     executeRemoveJourney(in, directory);
                     break;
+                case MIN_TRANSFERS:
+                    executeMinTransfers(in, directory);
+                    break;
                 case QUIT:
                     saveDirectory(directory);
                     executeQuit();
@@ -76,16 +85,16 @@ public class Main {
     }
 
     /**
-     * Restores the transportation network from the serialization file if available,
-     * otherwise initializes it from the line definition file provided in args,
-     * or terminates the application if neither exists.
+     * Restores the transportation network from the serialization file if
+     * available, otherwise initializes it from the line definition file
+     * provided in args, or terminates the application if neither exists.
      *
      * @param args command-line arguments
      * @return the initialized or restored StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(1) when neither file exists
-     * - Worst case: O(s + j * k) when deserializing a saved network, where s is stations, j is journeys, and k is average stops per journey
+     * Time complexity: - Best case: O(1) when neither file exists - Worst case:
+     * O(s + j * k) when deserializing a saved network, where s is stations, j
+     * is journeys, and k is average stops per journey
      */
     private static StationsDirectory loadDirectory(String[] args) {
         File file = new File(DATA_FILE);
@@ -128,9 +137,9 @@ public class Main {
      *
      * @param directory the StationsDirectory to persist
      *
-     * Time complexity:
-     * - Best case: O(n) when no journeys are stored, where n is the number of stations
-     * - Worst case: O(s + j * k), where s is stations, j is journeys, and k is average stops per journey
+     * Time complexity: - Best case: O(n) when no journeys are stored, where n
+     * is the number of stations - Worst case: O(s + j * k), where s is
+     * stations, j is journeys, and k is average stops per journey
      */
     private static void saveDirectory(StationsDirectory directory) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
@@ -143,9 +152,7 @@ public class Main {
     /**
      * Displays the list of available commands and their descriptions.
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(1)
+     * Time complexity: - Best case: O(1) - Worst case: O(1)
      */
     private static void executeHelp() {
         System.out.println("addJourney: Inserts a new journey into the transportation network.");
@@ -158,19 +165,24 @@ public class Main {
     }
 
     /**
-     * Reads journey details from standard input and inserts the journey into the directory.
+     * Reads journey details from standard input and inserts the journey into
+     * the directory.
      *
      * @param in the input Scanner
      * @param directory the StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(n) when the journey ID already exists, where n is the number of stops read
-     * - Worst case: O(n + m) when rehashing occurs, where n is stops and m is total registered journeys
+     * Time complexity: - Best case: O(n) when the journey ID already exists,
+     * where n is the number of stops read - Worst case: O(n + m) when rehashing
+     * occurs, where n is stops and m is total registered journeys
      */
     private static void executeAddJourney(Scanner in, StationsDirectory directory) {
-        if (!in.hasNextLine()) return;
+        if (!in.hasNextLine()) {
+            return;
+        }
         String journeyId = in.nextLine().trim();
-        if (!in.hasNextLine()) return;
+        if (!in.hasNextLine()) {
+            return;
+        }
         int n = Integer.parseInt(in.nextLine().trim());
 
         List<String> stops = new SinglyLinkedList<String>();
@@ -207,9 +219,8 @@ public class Main {
      * @param in the input Scanner
      * @param directory the StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(1) when input validation failsƒ
-     * - Worst case: O(n), where n is the number of journeys serving the origin station
+     * Time complexity: - Best case: O(1) when input validation failsƒ - Worst
+     * case: O(n), where n is the number of journeys serving the origin station
      */
     private static void executeFindJourney(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine().trim();
@@ -247,9 +258,8 @@ public class Main {
      * @param in the input Scanner
      * @param directory the StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(1) when input validation fails
-     * - Worst case: O(n), where n is the number of journeys serving the origin station
+     * Time complexity: - Best case: O(1) when input validation fails - Worst
+     * case: O(n), where n is the number of journeys serving the origin station
      */
     private static void executeFindJourneyMinStops(Scanner in, StationsDirectory directory) {
         String origin = in.nextLine().trim();
@@ -301,9 +311,9 @@ public class Main {
      * @param dest the arrival station name
      * @param dir the StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(s + j + k) in case of hash collisions, where s is the number of stations, j is the number of journeys, and k is the number of stops in the journey
+     * Time complexity: - Best case: O(1) - Worst case: O(s + j + k) in case of
+     * hash collisions, where s is the number of stations, j is the number of
+     * journeys, and k is the number of stops in the journey
      */
     private static void printJourney(String id, String origin, String dest, StationsDirectory dir) {
         System.out.println("Journey: " + id);
@@ -314,14 +324,16 @@ public class Main {
     }
 
     /**
-     * Reads a journey identifier from standard input and removes it from the network.
+     * Reads a journey identifier from standard input and removes it from the
+     * network.
      *
      * @param in the input Scanner
      * @param directory the StationsDirectory
      *
-     * Time complexity:
-     * - Best case: O(1) when the journey does not exist
-     * - Worst case: O(n * m + k), where n is the number of stops in the journey, m is the average departures per station, and k is the total number of registered journeys
+     * Time complexity: - Best case: O(1) when the journey does not exist -
+     * Worst case: O(n * m + k), where n is the number of stops in the journey,
+     * m is the average departures per station, and k is the total number of
+     * registered journeys
      */
     private static void executeRemoveJourney(Scanner in, StationsDirectory directory) {
         String journeyId = in.nextLine().trim();
@@ -332,12 +344,28 @@ public class Main {
         }
     }
 
+    private static void execureMinTransfers(Scanner in, StationsDirectory directory) {
+        String origin = in.nextLine();
+        String destination = in.nextLine();
+
+        if (!directory.hasStation(origin) || !directory.hasStation(destination)) {
+            System.out.println("Invalid station.");
+        } else if (!directory.isValidOrder(origin, destination)) {
+            System.out.println("Stations are not in the correct order.");
+        } else {
+            int transfers = directory.getMinTransfers(origin, destination);
+            if (transfers < 0) {
+                System.out.println("Destination is unreachable.");
+            } else {
+                System.out.println("Minimum number of transfers: " + transfers);
+            }
+        }
+    }
+
     /**
      * Prints the termination messages upon exiting the application.
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(1)
+     * Time complexity: - Best case: O(1) - Worst case: O(1)
      */
     private static void executeQuit() {
         System.out.println("Transportation network saved.");

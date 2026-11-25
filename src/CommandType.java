@@ -1,3 +1,4 @@
+
 /**
  * Enumeration of supported user commands in the Journey Planner application.
  *
@@ -12,33 +13,34 @@ public enum CommandType {
     FIND_JOURNEY("findjourney"),
     FIND_JOURNEY_MIN_STOPS("findjourneyminstops"),
     REMOVE_JOURNEY("removejourney"),
+    MIN_TRANSFERS("mintransfers"),
     QUIT("quit"),
     UNKNOWN("");
 
     private final String command;
 
     /**
-     * Constructs a CommandType constant associated with its normalized command string.
+     * Constructs a CommandType constant associated with its normalized command
+     * string.
      *
      * @param command the normalized command name
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(1)
+     * Time complexity: - Best case: O(1) - Worst case: O(1)
      */
     CommandType(String command) {
         this.command = command;
     }
 
     /**
-     * Resolves a normalized command string into its corresponding CommandType constant.
+     * Resolves a normalized command string into its corresponding CommandType
+     * constant.
      *
      * @param command the command string to match
      * @return the matching CommandType, or UNKNOWN if not recognized
      *
-     * Time complexity:
-     * - Best case: O(1) when the command matches the first enum constant
-     * - Worst case: O(1) (iterates over a fixed constant number of enum values)
+     * Time complexity: - Best case: O(1) when the command matches the first
+     * enum constant - Worst case: O(1) (iterates over a fixed constant number
+     * of enum values)
      */
     public static CommandType fromString(String command) {
         for (CommandType cmd : CommandType.values()) {
