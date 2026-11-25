@@ -5,15 +5,18 @@ import dataStructures.*;
 import java.io.Serializable;
 
 /**
- * Implementation of the transportation network directory managing stations and journeys.
+ * Implementation of the transportation network directory managing stations and
+ * journeys.
  *
  * @author Bernardo Andrade 68024; Rodrigo Pinheiro 69067
  * @version 1.0
  *
- * Space complexity: O(s + j * k), where s is the number of stations on the line,
- * j is the number of registered journeys, and k is the average number of stops per journey.
+ * Space complexity: O(s + j * k), where s is the number of stations on the
+ * line, j is the number of registered journeys, and k is the average number of
+ * stops per journey.
  */
 public class StationsDirectoryClass implements StationsDirectory, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private final List<Station> lineStations;
@@ -24,9 +27,7 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
     /**
      * Constructs an empty StationsDirectoryClass.
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(1)
+     * Time complexity: - Best case: O(1) - Worst case: O(1)
      */
     public StationsDirectoryClass() {
         this.lineStations = new DoublyLinkedList<Station>();
@@ -40,9 +41,7 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      *
      * @return the station count
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(1)
+     * Time complexity: - Best case: O(1) - Worst case: O(1)
      */
     @Override
     public int getStationCount() {
@@ -54,9 +53,8 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      *
      * @param stationName the name of the station
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) when rehashing occurs, where n is the number of stations
+     * Time complexity: - Best case: O(1) - Worst case: O(n) when rehashing
+     * occurs, where n is the number of stations
      */
     @Override
     public void initStation(String stationName) {
@@ -71,9 +69,8 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      * @param name the name of the station
      * @return true if the station exists, false otherwise
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) in case of hash collisions, where n is the number of stations
+     * Time complexity: - Best case: O(1) - Worst case: O(n) in case of hash
+     * collisions, where n is the number of stations
      */
     @Override
     public boolean hasStation(String name) {
@@ -81,15 +78,16 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
     }
 
     /**
-     * Checks if the origin station precedes the destination station along the line.
+     * Checks if the origin station precedes the destination station along the
+     * line.
      *
      * @param originName the name of the origin station
      * @param destName the name of the destination station
-     * @return true if both stations exist and origin comes before destination, false otherwise
+     * @return true if both stations exist and origin comes before destination,
+     * false otherwise
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) in case of hash collisions, where n is the number of stations
+     * Time complexity: - Best case: O(1) - Worst case: O(n) in case of hash
+     * collisions, where n is the number of stations
      */
     @Override
     public boolean isValidOrder(String originName, String destName) {
@@ -107,26 +105,31 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      * @param journeyId the journey identifier
      * @return true if the journey exists, false otherwise
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) in case of hash collisions, where n is the number of registered journeys
+     * Time complexity: - Best case: O(1) - Worst case: O(n) in case of hash
+     * collisions, where n is the number of registered journeys
      */
     @Override
     public boolean hasJourney(String journeyId) {
-        if (journeyId == null) return false;
+        if (journeyId == null) {
+            return false;
+        }
         return journeysMap.get(journeyId.toLowerCase()) != null;
     }
 
     /**
-     * Adds a new journey with its sequence of stops to the transportation network.
+     * Adds a new journey with its sequence of stops to the transportation
+     * network.
      *
      * @param id the unique journey identifier
-     * @param stopsData flattened list of stop entries (station name, arrival time, departure time)
-     * @return true if the journey was added, false if a journey with the same ID already exists
+     * @param stopsData flattened list of stop entries (station name, arrival
+     * time, departure time)
+     * @return true if the journey was added, false if a journey with the same
+     * ID already exists
      *
-     * Time complexity:
-     * - Best case: O(1) when the journey identifier already exists
-     * - Worst case: O(n + m) when rehashing occurs, where n is the number of stops in the journey and m is the total number of registered journeys
+     * Time complexity: - Best case: O(1) when the journey identifier already
+     * exists - Worst case: O(n + m) when rehashing occurs, where n is the
+     * number of stops in the journey and m is the total number of registered
+     * journeys
      */
     @Override
     public boolean addJourney(String id, List<String> stopsData) {
@@ -136,7 +139,7 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
         JourneyClass journey = new JourneyClass(id, insertionCounter++);
         Iterator<String> it = stopsData.iterator();
         int index = 0;
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             String stationName = it.next();
             String arr = it.next();
             String dep = it.next();
@@ -156,9 +159,10 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      * @param journeyId the identifier of the journey to remove
      * @return true if the journey was found and removed, false otherwise
      *
-     * Time complexity:
-     * - Best case: O(1) when the journey does not exist
-     * - Worst case: O(n * m + k), where n is the number of stops in the journey, m is the average departures per station, and k is the total number of registered journeys
+     * Time complexity: - Best case: O(1) when the journey does not exist -
+     * Worst case: O(n * m + k), where n is the number of stops in the journey,
+     * m is the average departures per station, and k is the total number of
+     * registered journeys
      */
     @Override
     public boolean removeJourney(String journeyId) {
@@ -178,17 +182,18 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
     }
 
     /**
-     * Finds the identifier of the earliest direct journey from origin to destination
-     * at or after the passenger's arrival time.
+     * Finds the identifier of the earliest direct journey from origin to
+     * destination at or after the passenger's arrival time.
      *
      * @param originName the origin station name
      * @param destName the destination station name
      * @param passengerTime the passenger's arrival time at the origin station
-     * @return the identifier of the best matching journey, or null if none is available
+     * @return the identifier of the best matching journey, or null if none is
+     * available
      *
-     * Time complexity:
-     * - Best case: O(1) when either station does not exist
-     * - Worst case: O(n), where n is the number of journeys departing from the origin station
+     * Time complexity: - Best case: O(1) when either station does not exist -
+     * Worst case: O(n), where n is the number of journeys departing from the
+     * origin station
      */
     @Override
     public String findJourney(String originName, String destName, Time passengerTime) {
@@ -210,8 +215,8 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
             if (origStop != null && destStop != null && origStop.getStopIndex() < destStop.getStopIndex()) {
                 Time dep = origStop.getDepartureTime();
                 if (dep != null && !dep.isBefore(passengerTime)) {
-                    if (bestJourney == null || dep.isBefore(bestDepTime) ||
-                       (dep.compareTo(bestDepTime) == 0 && j.getInsertionOrder() < bestJourney.getInsertionOrder())) {
+                    if (bestJourney == null || dep.isBefore(bestDepTime)
+                            || (dep.compareTo(bestDepTime) == 0 && j.getInsertionOrder() < bestJourney.getInsertionOrder())) {
                         bestJourney = j;
                         bestDepTime = dep;
                     }
@@ -225,18 +230,19 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
     }
 
     /**
-     * Finds the identifier of the direct journey with the minimum number of stops
-     * within a given departure time interval.
+     * Finds the identifier of the direct journey with the minimum number of
+     * stops within a given departure time interval.
      *
      * @param originName the origin station name
      * @param destName the destination station name
      * @param minTime the minimum departure time
      * @param maxTime the maximum departure time
-     * @return the identifier of the best matching journey, or null if none is available
+     * @return the identifier of the best matching journey, or null if none is
+     * available
      *
-     * Time complexity:
-     * - Best case: O(1) when either station does not exist
-     * - Worst case: O(n), where n is the number of journeys departing from the origin station
+     * Time complexity: - Best case: O(1) when either station does not exist -
+     * Worst case: O(n), where n is the number of journeys departing from the
+     * origin station
      */
     @Override
     public String findJourneyMinStops(String originName, String destName, Time minTime, Time maxTime) {
@@ -284,8 +290,8 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
                                 if (dep.isBefore(bestDepTime)) {
                                     bestJourney = j;
                                     bestDepTime = dep;
-                                } else if (dep.compareTo(bestDepTime) == 0 &&
-                                           j.getInsertionOrder() < bestJourney.getInsertionOrder()) {
+                                } else if (dep.compareTo(bestDepTime) == 0
+                                        && j.getInsertionOrder() < bestJourney.getInsertionOrder()) {
                                     bestJourney = j;
                                 }
                             }
@@ -301,38 +307,41 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
     }
 
     /**
-     * Returns the formatted departure or arrival time of a journey at a given station.
+     * Returns the formatted departure or arrival time of a journey at a given
+     * station.
      *
      * @param Id the journey identifier
      * @param name the station name
-     * @param departure true to retrieve the departure time, false for the arrival time
+     * @param departure true to retrieve the departure time, false for the
+     * arrival time
      * @return the formatted HH:mm time string
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(s + j + k) in case of hash collisions, where s is the number of stations, j is the number of journeys, and k is the number of stops in the journey
+     * Time complexity: - Best case: O(1) - Worst case: O(s + j + k) in case of
+     * hash collisions, where s is the number of stations, j is the number of
+     * journeys, and k is the number of stops in the journey
      */
     @Override
-    public String getTime (String Id, String name, boolean departure){
+    public String getTime(String Id, String name, boolean departure) {
         Station station = getStation(name);
         Journey j = journeysMap.get(Id.toLowerCase());
-        if(departure) {
-             return j.getStop(station).getDepartureTime().toString();
+        if (departure) {
+            return j.getStop(station).getDepartureTime().toString();
         }
         return j.getStop(station).getArrivalTime().toString();
     }
 
     /**
-     * Counts the number of stops between an origin station and a destination station for a given journey.
+     * Counts the number of stops between an origin station and a destination
+     * station for a given journey.
      *
      * @param id the journey identifier
      * @param origin the origin station name
      * @param dest the destination station name
      * @return the number of stops between origin and destination
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(s + j + k) in case of hash collisions, where s is the number of stations, j is the number of journeys, and k is the number of stops in the journey
+     * Time complexity: - Best case: O(1) - Worst case: O(s + j + k) in case of
+     * hash collisions, where s is the number of stations, j is the number of
+     * journeys, and k is the number of stops in the journey
      */
     @Override
     public int countStopsBetween(String id, String origin, String dest) {
@@ -348,9 +357,8 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
      * @param name the station name to look up
      * @return the original station name, or null if not found
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) in case of hash collisions, where n is the number of stations
+     * Time complexity: - Best case: O(1) - Worst case: O(n) in case of hash
+     * collisions, where n is the number of stations
      */
     @Override
     public String getStationName(String name) {
@@ -361,18 +369,69 @@ public class StationsDirectoryClass implements StationsDirectory, Serializable {
         return st.getName();
     }
 
+    @Override
+    public int getMinTransfers(String origin, String destination) {
+        Station originStation = getStation(origin);
+        Station destStation = getStation(destination);
+
+        int dstIdx = destStation.getOrderInLine();
+
+        int n = getStationCount();
+        int[] journeysUsed = new int[n];
+        for (int i = 0; i < n; i++) {
+            journeysUsed[i] = -1;
+        }
+
+        Queue<Station> queue = new QueueInArray<Station>(n);
+        journeysUsed[originStation.getOrderInLine()] = 0;
+        queue.enqueue(originStation);
+
+        while (!queue.isEmpty()) {
+            Station cur = queue.dequeue();
+            int curIdx = cur.getOrderInLine();
+            int d = journeysUsed[curIdx];
+            Iterator<Journey> jIt = cur.getDepartures().iterator();
+
+            while (jIt.hasNext()) {
+                Journey j = jIt.next();
+                Iterator<Stop> sIt = j.getStops().iterator();
+                boolean afterCur = false;
+
+                while (sIt.hasNext()) {
+                    Station st = sIt.next().getStation();
+                    int idx = st.getOrderInLine();
+
+                    if (afterCur) {
+                        if (journeysUsed[idx] == -1) {
+                            journeysUsed[idx] = d + 1;
+                            if (idx == dstIdx) {
+                                return d;
+                            }
+                            queue.enqueue(st);
+                        }
+                    } else if (idx == curIdx) {
+                        afterCur = true;
+                    }
+                }
+
+            }
+        }
+        return -1;
+    }
+
     /**
      * Retrieves a station by its name (case-insensitive).
      *
      * @param name the name of the station
      * @return the Station object, or null if not found
      *
-     * Time complexity:
-     * - Best case: O(1)
-     * - Worst case: O(n) in case of hash collisions, where n is the number of stations
+     * Time complexity: - Best case: O(1) - Worst case: O(n) in case of hash
+     * collisions, where n is the number of stations
      */
     private Station getStation(String name) {
-        if (name == null) return null;
+        if (name == null) {
+            return null;
+        }
         return stationsMap.get(name.toLowerCase());
     }
 
