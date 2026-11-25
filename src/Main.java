@@ -152,6 +152,7 @@ public class Main {
         System.out.println("findJourney: Finds the earliest journey that allows a passenger to travel from one station to another.");
         System.out.println("findJourneyMinStops: Finds the direct journey with the minimum number of stops.");
         System.out.println("removeJourney: Removes the given journey from the transportation network.");
+        System.out.println("minTransfers: Determines the minimum number of transfers required to travel between two stations.");
         System.out.println("help: Displays the list of available commands.");
         System.out.println("quit: Saves the transportation network and terminates the application.");
     }
@@ -207,7 +208,7 @@ public class Main {
      * @param directory the StationsDirectory
      *
      * Time complexity:
-     * - Best case: O(1) when input validation fails
+     * - Best case: O(1) when input validation failsƒ
      * - Worst case: O(n), where n is the number of journeys serving the origin station
      */
     private static void executeFindJourney(Scanner in, StationsDirectory directory) {
